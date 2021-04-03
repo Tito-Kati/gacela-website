@@ -5,7 +5,6 @@
             @include font-size(8, desktop, true, true, true);
         }
     }
-    color: color(typography, 3);
 
     a {
         @include anchor-aspect(footer);
