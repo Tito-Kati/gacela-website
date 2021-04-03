@@ -1,16 +1,17 @@
 {
-  "name": "Holly",
+  "name": "gacela-project",
   "version": "1.0.0",
-  "description": "Holly Template",
-  "author": "Pasquale Vitiello <pasqualevitiello@gmail.com>",
-  "license": "GPLv3",
-  "repository": {
-    "type": "git",
-    "url": "https://bitbucket.org/pasqualevitiello/Holly.git"
-  },
-  "bugs": {
-    "url": "https://bitbucket.org/pasqualevitiello/Holly/issues"
-  },
+  "description": "Gacela website",
+  "authors": [
+    {
+      "name": "Jose Maria Valera Reales",
+      "email": "chemaclass@outlook.es"
+    },
+    {
+      "name": "Jesus Valera Reales",
+      "email": "jesus1902@outlook.com"
+    }
+  ],
   "scripts": {
     "clean": "rimraf dist/{css/*,js/*,images/*}",
     "autoprefixer": "postcss -u autoprefixer -r dist/css/*",
@@ -33,11 +34,11 @@
   "devDependencies": {
     "autoprefixer": "^9.0.1",
     "browser-sync": "^2.12.8",
-    "eslint": "^5.2.0",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-node": "^7.0.1",
-    "eslint-plugin-promise": "^3.8.0",
+    "eslint": "^7.23.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^3.1.0",
     "imagemin-cli": "^3.0.0",
     "mkdirp": "^0.5.1",
@@ -49,6 +50,6 @@
     "stylelint": "^9.4.0",
     "uglify-es": "^3.3.10"
   },
-  "homepage": "https://bitbucket.org/pasqualevitiello/Holly#readme",
+  "homepage": "http://gacela-project.com/",
   "main": ".eslintrc.js"
 }
