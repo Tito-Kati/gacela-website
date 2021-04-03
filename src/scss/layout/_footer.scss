@@ -15,7 +15,6 @@
     position: relative; /* To display all elements above the background color */
     display: flex;
     flex-wrap: wrap;
-    padding-top: 40px;
     padding-bottom: 40px;
 }
 
@@ -26,6 +25,10 @@
     width: 100%;
     display: inline-flex;
     justify-content: center;
+}
+
+.footer-copyright {
+    color: color(typography, 3);
 }
 
 .footer-brand,
@@ -95,12 +98,5 @@
     .footer-links {
         order: 1;
         margin-bottom: 0;
-    }
-}
-
-@include media( '<=large' ) {
-
-    .footer-copyright {
-        color: color(typography, 1i);
     }
 }

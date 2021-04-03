@@ -27,6 +27,19 @@ main {
     padding-bottom: 48px;
 }
 
+.anchor-link {
+    color: #d9d9d9;
+    font-size: 70%;
+    font-weight: 400;
+    vertical-align: text-top;
+    text-decoration: none;
+    margin-left: .3em;
+
+    &:hover {
+        color: #3a3d47;
+    }
+}
+
 @include media( '>medium' ) {
 
     .section-inner {

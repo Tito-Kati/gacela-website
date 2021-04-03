@@ -7,7 +7,6 @@
     <title>Gacela PHP Framework</title>
     <link href="https://fonts.googleapis.com/css?family=Fira+Sans:400,400i,500,700" rel="stylesheet">
     <link rel="stylesheet" href="dist/css/style.css">
-    <link rel="stylesheet" href="dist/css/github-theme.css">
     <script src="https://kit.fontawesome.com/fa8ac97011.js" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
 </head>
@@ -36,8 +35,10 @@
                             </h2>
 
                             <p class="hero-paragraph is-revealing">
-                                Splitting your project into different modules will help the design of your project in terms of maintainability and scalability.
-                                It will certainly encourage your modules to interact with each other in a unified way by following these rules:
+                                Splitting your project into different modules will help the design of your project in
+                                terms of maintainability and scalability.
+                                It will certainly encourage your modules to interact with each other in a unified way by
+                                following these rules:
                             </p>
 
                             <div class="hero-paragraph is-revealing">
@@ -51,35 +52,184 @@
                             </div>
 
                             <div class="hero-paragraph is-revealing">
-                                <div class="facade">
-                                    <h4>Facade <small>The entry point of your module</small></h4>
+                                <div>
+                                    <h4 id="facade-the-entry-point-of-your-module">Facade <small>The entry point of your module</small>
+                                        <a class="anchor-link" href="#facade-the-entry-point-of-your-module">¶</a>
+                                    </h4>
+
                                     <p>
                                         The Facade uses the Factory to create the module's domain instances and executes
                                         the desired behaviour from them.
                                     </p>
+                                    <pre><code data-language="php"># src/Calculator/FacadeInterface.php
+
+interface FacadeInterface
+{
+    public function sum(): void;
+}</code></pre>
+
+                                    <pre><code data-language="php"># src/Calculator/Facade.php
+
+/**
+ * @method Factory getFactory()
+ */
+final class Facade extends AbstractFacade implements FacadeInterface
+{
+    public function sum(int ...$numbers): int
+    {
+        $this->getFactory()
+            ->createAdder()
+            ->add(...$numbers);
+    }
+}</code></pre>
+
+                                    <span>A Facade is a "ready to use" thing:</span>
+                                    <pre><code data-language="php">$facade = new Facade();
+$result = $facade->sum(2, 3);
+</code></pre>
+                                    <span>The Facade uses the Factory to create the module's domain instances and executes the desired behaviour from them. Nothing less, nothing more.</span>
                                 </div>
 
-                                <div class="factory">
-                                    <h4>Factory <small>It's where you create your objects</small></h4>
+                                <div>
+                                    <h4 id="factory-Its-where-you-create-your-objects">Factory <small>It's where you create your objects</small>
+                                        <a class="anchor-link" href="#factory-Its-where-you-create-your-objects">¶</a>
+                                    </h4>
                                     <p>
                                         The Factory is the place where you create your domain services and objects.
                                         The Factory is accessible only by the Facade.
                                     </p>
+
+                                    <span>The Factory is the place where you create your domain services and objects. The Facade is the class that can access the Factory.</span>
+
+                                    <pre><code data-language="php"># src/Calculator/Factory.php
+
+/**
+ * @method Config getConfig()
+ */
+final class Factory extends AbstractFactory
+{
+    public function createAdder(): AdderInterface
+    {
+        return new Adder(
+            // ...
+        );
+    }
+}</code></pre>
+
+<pre><code data-language="php"># src/Calculator/Facade.php
+
+/**
+ * @method Factory getFactory()
+ */
+final class Facade extends AbstractFacade
+{
+    public function sum(int ...$numbers): int
+    {
+        return $this->getFactory()
+            ->createAdder()
+            ->add(...$numbers);
+    }
+}
+</code></pre>
                                 </div>
 
-                                <div class="config">
-                                    <h4>Config <small>It reads the config.php key-values</small></h4>
+                                <div>
+                                    <h4 id="config-it-reads-the-config-php-key-values">Config <small>It reads the config.php key-values</small>
+                                        <a class="anchor-link" href="#config-it-reads-the-config-php-key-values">¶</a>
+                                    </h4>
                                     <p>
-                                        Use a Config Class to construct your business domain classes by injecting the data
-                                        from the Config using the Factory when you do the creation of your domain classes.
+                                        Use a Config Class to construct your business domain classes by injecting the
+                                        data
+                                        from the Config using the Factory when you do the creation of your domain
+                                        classes.
                                     </p>
+
+                                    <pre><code data-language="php"># config.php
+
+use src\Calculator\Config;
+
+return [
+    Config::MAX_ADDITIONS => 20,
+];
+</code></pre>
+                                    <pre><code data-language="php"># src/Calculator/Config.php
+
+final class Config extends AbstractConfig
+{
+    public const MAX_ADDITIONS = 'MAX_ADDITIONS';
+
+    public function getMaxAdditions(): int
+    {
+        return $this->get(self::MAX_ADDITIONS, $default = 0);
+    }
+}</code></pre>
+                                    <pre><code data-language="php"># src/Calculator/Factory.php
+
+/**
+ * @method Config getConfig()
+ */
+final class Factory extends AbstractFactory
+{
+    public function createAdder(): AdderInterface
+    {
+        return new Adder(
+            $this->getConfig()->getMaxAdditions()
+        );
+    }
+}</code></pre>
                                 </div>
 
-                                <div class="dependency-provider">
-                                    <h4>DependencyProvider <small>It defines the dependencies</small></h4>
+                                <div>
+                                    <h4 id="dependency-provider-it-defines-the-dependencies">DependencyProvider <small>It
+                                        defines the dependencies</small>
+                                        <a class="anchor-link" href="#dependency-provider-it-defines-the-dependencies">¶</a>
+                                    </h4>
                                     <p>
-                                        This is the place where you can define the dependencies that a particular module has with other modules.
+                                        This is the place where you can define the dependencies that a particular module
+                                        has with other modules.
                                     </p>
+
+                                    <pre><code data-language="php"># src/Calculator/Factory.php
+
+final class Factory extends AbstractFactory
+{
+    public function createAdder(): AdderInterface
+    {
+        return new Adder(
+            $this->getAnotherFacade()
+        );
+    }
+
+    private function getAnotherFacade(): AnotherFacade
+    {
+        return $this->getProvidedDependency(
+            DependencyProvider::FACADE_ANOTHER_MODULE
+        );
+    }
+}</code></pre>
+
+                                    <pre><code data-language="php"># src/Calculator/DependencyProvider.php
+
+final class DependencyProvider extends AbstractDependencyProvider
+{
+    public const FACADE_ANOTHER_MODULE = 'FACADE_ANOTHER_MODULE';
+
+    public function provideModuleDependencies(Container $container): void
+    {
+        $this->addFacadeAnother($container);
+    }
+
+    private function addFacadeAnother(Container $container): void
+    {
+        $container->set(
+            self::FACADE_ANOTHER_MODULE,
+            function (Container $container): AnotherFacade {
+                return $container->getLocator()->get(AnotherFacade::class);
+            }
+        );
+    }
+}</code></pre>
+
                                 </div>
 
                             </div>
@@ -90,24 +240,24 @@
                             <svg width="124" height="64" viewBox="0 0 124 64" xmlns="http://www.w3.org/2000/svg">
                                 <defs>
                                     <linearGradient x1="0%" y1="50%" x2="114.418%" y2="50%" id="squares-1-a">
-                                        <stop stop-color="#ec8733" offset="0%"/>
-                                        <stop stop-color="#ec8733" stop-opacity="0" offset="100%"/>
+                                        <stop stop-color="#ec8733" offset="0%" />
+                                        <stop stop-color="#ec8733" stop-opacity="0" offset="100%" />
                                     </linearGradient>
                                 </defs>
                                 <path d="M0 0h4v4H0V0zm0 12h4v4H0v-4zm0 12h4v4H0v-4zm0 12h4v4H0v-4zm0 12h4v4H0v-4zm0 12h4v4H0v-4zM12 0h4v4h-4V0zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zM24 0h4v4h-4V0zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zM36 0h4v4h-4V0zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zM48 0h4v4h-4V0zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zM60 0h4v4h-4V0zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zM72 0h4v4h-4V0zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zM84 0h4v4h-4V0zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zM96 0h4v4h-4V0zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm12-60h4v4h-4V0zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm12-60h4v4h-4V0zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4z"
-                                      fill="url(#squares-1-a)" fill-rule="evenodd"/>
+                                      fill="url(#squares-1-a)" fill-rule="evenodd" />
                             </svg>
                         </div>
                         <div class="hero-squares hero-squares-2 is-revealing">
                             <svg width="64" height="88" viewBox="0 0 64 88" xmlns="http://www.w3.org/2000/svg">
                                 <defs>
                                     <linearGradient x1="0%" y1="50%" x2="114.418%" y2="50%" id="squares-2-a">
-                                        <stop stop-color="#ec8733" offset="0%"/>
-                                        <stop stop-color="#ec8733" stop-opacity="0" offset="100%"/>
+                                        <stop stop-color="#ec8733" offset="0%" />
+                                        <stop stop-color="#ec8733" stop-opacity="0" offset="100%" />
                                     </linearGradient>
                                 </defs>
                                 <path d="M80 574h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm12-60h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm12-60h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm12-60h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm12-60h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm12-60h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm12-60h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm12-60h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4zm0 12h4v4h-4v-4z"
-                                      transform="rotate(90 359 279)" fill="url(#squares-2-a)" fill-rule="evenodd"/>
+                                      transform="rotate(90 359 279)" fill="url(#squares-2-a)" fill-rule="evenodd" />
                             </svg>
                         </div>
                         <div class="hero-ball hero-ball-1 is-revealing">
@@ -116,22 +266,22 @@
                                     <radialGradient cx="56.15%" cy="27.43%" fx="56.15%" fy="27.43%" r="57.526%"
                                                     gradientTransform="matrix(.5626 -.82673 .8022 .54591 .026 .589)"
                                                     id="ball-1-a">
-                                        <stop stop-color="#fafcff" offset="0%"/>
-                                        <stop stop-color="#d9e7ff" offset="34.827%"/>
-                                        <stop stop-color="#8fbaff" offset="100%"/>
+                                        <stop stop-color="#fafcff" offset="0%" />
+                                        <stop stop-color="#d9e7ff" offset="34.827%" />
+                                        <stop stop-color="#8fbaff" offset="100%" />
                                     </radialGradient>
                                     <filter x="-500%" y="-500%" width="1000%" height="1000%"
                                             filterUnits="objectBoundingBox" id="dropshadow-ball-1">
-                                        <feOffset dx="24" dy="24" in="SourceAlpha" result="shadowOffsetOuter"/>
+                                        <feOffset dx="24" dy="24" in="SourceAlpha" result="shadowOffsetOuter" />
                                         <feGaussianBlur stdDeviation="24" in="shadowOffsetOuter"
-                                                        result="shadowBlurOuter"/>
+                                                        result="shadowBlurOuter" />
                                         <feColorMatrix values="0 0 0 0 0.10 0 0 0 0 0.17 0 0 0 0 0.21 0 0 0 0.22 0"
-                                                       in="shadowBlurOuter"/>
+                                                       in="shadowBlurOuter" />
                                     </filter>
                                 </defs>
                                 <circle cx="200" cy="200" r="200" fill="#FFF" fill-rule="evenodd"
-                                        style="filter:url(#dropshadow-ball-1)"/>
-                                <circle cx="200" cy="200" r="200" fill="url(#ball-1-a)" fill-rule="evenodd"/>
+                                        style="filter:url(#dropshadow-ball-1)" />
+                                <circle cx="200" cy="200" r="200" fill="url(#ball-1-a)" fill-rule="evenodd" />
                             </svg>
                         </div>
                         <div class="hero-ball hero-ball-2 is-revealing">
@@ -140,148 +290,148 @@
                                     <radialGradient cx="56.15%" cy="27.43%" fx="56.15%" fy="27.43%" r="57.526%"
                                                     gradientTransform="matrix(.5626 -.82673 .8022 .54591 .026 .589)"
                                                     id="ball-2-a">
-                                        <stop stop-color="#fafcff" offset="0%"/>
-                                        <stop stop-color="#d9e7ff" offset="34.827%"/>
-                                        <stop stop-color="#8fbaff" offset="100%"/>
+                                        <stop stop-color="#fafcff" offset="0%" />
+                                        <stop stop-color="#d9e7ff" offset="34.827%" />
+                                        <stop stop-color="#8fbaff" offset="100%" />
                                     </radialGradient>
                                     <filter x="-500%" y="-500%" width="1000%" height="1000%"
                                             filterUnits="objectBoundingBox" id="dropshadow-ball-2">
-                                        <feOffset dx="24" dy="24" in="SourceAlpha" result="shadowOffsetOuter"/>
+                                        <feOffset dx="24" dy="24" in="SourceAlpha" result="shadowOffsetOuter" />
                                         <feGaussianBlur stdDeviation="24" in="shadowOffsetOuter"
-                                                        result="shadowBlurOuter"/>
+                                                        result="shadowBlurOuter" />
                                         <feColorMatrix values="0 0 0 0 0.10 0 0 0 0 0.17 0 0 0 0 0.21 0 0 0 0.22 0"
-                                                       in="shadowBlurOuter"/>
+                                                       in="shadowBlurOuter" />
                                     </filter>
                                 </defs>
                                 <circle cx="100" cy="100" r="100" fill="#FFF" fill-rule="evenodd"
-                                        style="filter:url(#dropshadow-ball-2)"/>
-                                <circle cx="100" cy="100" r="100" fill="url(#ball-2-a)" fill-rule="evenodd"/>
+                                        style="filter:url(#dropshadow-ball-2)" />
+                                <circle cx="100" cy="100" r="100" fill="url(#ball-2-a)" fill-rule="evenodd" />
                             </svg>
                         </div>
                         <div class="hero-illustration-browser is-revealing">
                             <svg width="800" height="450" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
                                 <defs>
                                     <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="browser-a">
-                                        <stop stop-color="#F89595" offset="0%"/>
-                                        <stop stop-color="#EF5C5C" offset="100%"/>
+                                        <stop stop-color="#F89595" offset="0%" />
+                                        <stop stop-color="#EF5C5C" offset="100%" />
                                     </linearGradient>
                                     <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="browser-b">
-                                        <stop stop-color="#FFDFB0" offset="0%"/>
-                                        <stop stop-color="#FFBB78" offset="100%"/>
+                                        <stop stop-color="#FFDFB0" offset="0%" />
+                                        <stop stop-color="#FFBB78" offset="100%" />
                                     </linearGradient>
                                     <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="browser-c">
-                                        <stop stop-color="#83E78D" offset="0%"/>
-                                        <stop stop-color="#4BCA55" offset="100%"/>
+                                        <stop stop-color="#83E78D" offset="0%" />
+                                        <stop stop-color="#4BCA55" offset="100%" />
                                     </linearGradient>
                                     <filter x="-30%" y="-42.9%" width="184%" height="220%"
                                             filterUnits="objectBoundingBox" id="browser-d">
-                                        <feOffset dx="24" dy="24" in="SourceAlpha" result="shadowOffsetOuter1"/>
+                                        <feOffset dx="24" dy="24" in="SourceAlpha" result="shadowOffsetOuter1" />
                                         <feGaussianBlur stdDeviation="24" in="shadowOffsetOuter1"
-                                                        result="shadowBlurOuter1"/>
+                                                        result="shadowBlurOuter1" />
                                         <feColorMatrix
                                                 values="0 0 0 0 0.866666667 0 0 0 0 0.905882353 0 0 0 0 0.937254902 0 0 0 0.56 0"
-                                                in="shadowBlurOuter1" result="shadowMatrixOuter1"/>
+                                                in="shadowBlurOuter1" result="shadowMatrixOuter1" />
                                         <feMerge>
-                                            <feMergeNode in="shadowMatrixOuter1"/>
-                                            <feMergeNode in="SourceGraphic"/>
+                                            <feMergeNode in="shadowMatrixOuter1" />
+                                            <feMergeNode in="SourceGraphic" />
                                         </feMerge>
                                     </filter>
                                     <linearGradient x1="19.946%" y1="72.147%" x2="73.772%" y2="18.374%" id="browser-e">
-                                        <stop stop-color="#ffe5d0" offset="0%"/>
-                                        <stop stop-color="#ec8733" offset="100%"/>
+                                        <stop stop-color="#ffe5d0" offset="0%" />
+                                        <stop stop-color="#ec8733" offset="100%" />
                                     </linearGradient>
                                     <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="browser-f">
-                                        <stop stop-color="#ffe5d0" offset="0%"/>
-                                        <stop stop-color="#ec8733" offset="100%"/>
+                                        <stop stop-color="#ffe5d0" offset="0%" />
+                                        <stop stop-color="#ec8733" offset="100%" />
                                     </linearGradient>
                                     <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="browser-g">
-                                        <stop stop-color="#ffe5d0" offset="0%"/>
-                                        <stop stop-color="#ec8733" offset="100%"/>
+                                        <stop stop-color="#ffe5d0" offset="0%" />
+                                        <stop stop-color="#ec8733" offset="100%" />
                                     </linearGradient>
                                     <linearGradient x1="94.808%" y1="-15.701%" x2="6.924%" y2="82.567%" id="browser-h">
-                                        <stop stop-color="#ffe5d0" stop-opacity="0" offset="0%"/>
-                                        <stop stop-color="#ec8733" offset="100%"/>
+                                        <stop stop-color="#ffe5d0" stop-opacity="0" offset="0%" />
+                                        <stop stop-color="#ec8733" offset="100%" />
                                     </linearGradient>
                                     <linearGradient x1="1.733%" y1="-10.509%" y2="77.375%" id="browser-i">
-                                        <stop stop-color="#ffe5d0" stop-opacity="0" offset="0%"/>
-                                        <stop stop-color="#ec8733" offset="100%"/>
+                                        <stop stop-color="#ffe5d0" stop-opacity="0" offset="0%" />
+                                        <stop stop-color="#ec8733" offset="100%" />
                                     </linearGradient>
                                     <linearGradient x1="92.458%" y1="5.866%" x2="0%" y2="100%" id="browser-j">
-                                        <stop stop-color="#ffe5d0" offset="0%"/>
-                                        <stop stop-color="#ec8733" stop-opacity="0" offset="100%"/>
+                                        <stop stop-color="#ffe5d0" offset="0%" />
+                                        <stop stop-color="#ec8733" stop-opacity="0" offset="100%" />
                                     </linearGradient>
                                     <linearGradient x1="92.458%" y1="5.866%" x2="0%" y2="100%" id="browser-k">
-                                        <stop stop-color="#ffe5d0" stop-opacity="0" offset="0%"/>
-                                        <stop stop-color="#ec8733" stop-opacity=".513" offset="48.724%"/>
-                                        <stop stop-color="#ec8733" stop-opacity="0" offset="100%"/>
+                                        <stop stop-color="#ffe5d0" stop-opacity="0" offset="0%" />
+                                        <stop stop-color="#ec8733" stop-opacity=".513" offset="48.724%" />
+                                        <stop stop-color="#ec8733" stop-opacity="0" offset="100%" />
                                     </linearGradient>
                                     <linearGradient x1="92.458%" y1="5.866%" x2="0%" y2="100%" id="browser-l">
-                                        <stop stop-color="#ffe5d0" stop-opacity="0" offset="0%"/>
-                                        <stop stop-color="#ec8733" stop-opacity=".513" offset="47.494%"/>
-                                        <stop stop-color="#ec8733" stop-opacity="0" offset="100%"/>
+                                        <stop stop-color="#ffe5d0" stop-opacity="0" offset="0%" />
+                                        <stop stop-color="#ec8733" stop-opacity=".513" offset="47.494%" />
+                                        <stop stop-color="#ec8733" stop-opacity="0" offset="100%" />
                                     </linearGradient>
                                     <filter x="-23.1%" y="-21.8%" width="192.3%" height="187.3%"
                                             filterUnits="objectBoundingBox" id="browser-m">
-                                        <feOffset dx="24" dy="24" in="SourceAlpha" result="shadowOffsetOuter1"/>
+                                        <feOffset dx="24" dy="24" in="SourceAlpha" result="shadowOffsetOuter1" />
                                         <feGaussianBlur stdDeviation="12" in="shadowOffsetOuter1"
-                                                        result="shadowBlurOuter1"/>
+                                                        result="shadowBlurOuter1" />
                                         <feColorMatrix
                                                 values="0 0 0 0 0.866666667 0 0 0 0 0.905882353 0 0 0 0 0.937254902 0 0 0 0.56 0"
-                                                in="shadowBlurOuter1" result="shadowMatrixOuter1"/>
+                                                in="shadowBlurOuter1" result="shadowMatrixOuter1" />
                                         <feMerge>
-                                            <feMergeNode in="shadowMatrixOuter1"/>
-                                            <feMergeNode in="SourceGraphic"/>
+                                            <feMergeNode in="shadowMatrixOuter1" />
+                                            <feMergeNode in="SourceGraphic" />
                                         </feMerge>
                                     </filter>
                                     <linearGradient x1="100%" y1="50%" x2="-57.904%" y2="50%" id="browser-n">
-                                        <stop stop-color="#ffecdd" offset="0%"/>
-                                        <stop stop-color="#ec8733" offset="100%"/>
+                                        <stop stop-color="#ffecdd" offset="0%" />
+                                        <stop stop-color="#ec8733" offset="100%" />
                                     </linearGradient>
                                     <filter x="-500%" y="-500%" width="1000%" height="1000%"
                                             filterUnits="objectBoundingBox" id="dropshadow-1">
-                                        <feOffset dy="16" in="SourceAlpha" result="shadowOffsetOuter"/>
+                                        <feOffset dy="16" in="SourceAlpha" result="shadowOffsetOuter" />
                                         <feGaussianBlur stdDeviation="24" in="shadowOffsetOuter"
-                                                        result="shadowBlurOuter"/>
+                                                        result="shadowBlurOuter" />
                                         <feColorMatrix values="0 0 0 0 0.10 0 0 0 0 0.17 0 0 0 0 0.21 0 0 0 0.22 0"
-                                                       in="shadowBlurOuter"/>
+                                                       in="shadowBlurOuter" />
                                     </filter>
                                 </defs>
                                 <g fill="none" fill-rule="evenodd">
                                     <rect width="800" height="450" rx="2" fill="#FFF"
-                                          style="filter:url(#dropshadow-1)"/>
-                                    <rect width="800" height="450" rx="2" fill="#FFF"/>
+                                          style="filter:url(#dropshadow-1)" />
+                                    <rect width="800" height="450" rx="2" fill="#FFF" />
                                     <g>
-                                        <path fill="#DDE7EF" d="M0 32h800v1H0z"/>
-                                        <circle fill="url(#browser-a)" cx="24" cy="16" r="4"/>
-                                        <circle fill="url(#browser-b)" cx="40" cy="16" r="4"/>
-                                        <circle fill="url(#browser-c)" cx="56" cy="16" r="4"/>
+                                        <path fill="#DDE7EF" d="M0 32h800v1H0z" />
+                                        <circle fill="url(#browser-a)" cx="24" cy="16" r="4" />
+                                        <circle fill="url(#browser-b)" cx="40" cy="16" r="4" />
+                                        <circle fill="url(#browser-c)" cx="56" cy="16" r="4" />
                                     </g>
                                     <g filter="url(#browser-d)" transform="translate(505 196)" fill-rule="nonzero">
                                         <path d="M100 100l100-50.426L103.193.762a7.087 7.087 0 0 0-6.393 0L0 49.574 100 100z"
-                                              fill="url(#browser-e)"/>
-                                        <path d="M199 90L99 139.875v-40L199 50v40z" fill="url(#browser-f)"/>
-                                        <path d="M100 139.875L0 90V50l100 49.875v40z" fill="url(#browser-g)"/>
+                                              fill="url(#browser-e)" />
+                                        <path d="M199 90L99 139.875v-40L199 50v40z" fill="url(#browser-f)" />
+                                        <path d="M100 139.875L0 90V50l100 49.875v40z" fill="url(#browser-g)" />
                                     </g>
                                     <g stroke-width="2">
                                         <path stroke="url(#browser-h)" d="M498.336 298.7l-62.117 30.105L194 208"
-                                              transform="translate(169 54)"/>
+                                              transform="translate(169 54)" />
                                         <path d="M511.219 127.805L269 7" stroke="url(#browser-i)"
-                                              transform="translate(169 54)"/>
+                                              transform="translate(169 54)" />
                                         <path d="M312 157.547L533.512 43" stroke="url(#browser-j)"
-                                              transform="translate(169 54)"/>
+                                              transform="translate(169 54)" />
                                         <path d="M222 114.547L443.512 0" stroke="url(#browser-k)"
-                                              transform="translate(169 54)"/>
+                                              transform="translate(169 54)" />
                                         <path d="M0 356.547L221.512 242" stroke="url(#browser-l)"
-                                              transform="translate(169 54)"/>
+                                              transform="translate(169 54)" />
                                         <path d="M215 319.266L312.031 268" stroke="url(#browser-j)"
-                                              transform="translate(169 54)"/>
+                                              transform="translate(169 54)" />
                                     </g>
                                     <g filter="url(#browser-m)" transform="scale(-1 1) rotate(45 -338.122 -406.594)"
                                        fill-rule="nonzero">
                                         <path d="M52 0L.511 70.268a2.668 2.668 0 0 0-.478 1.987 2.63 2.63 0 0 0 1.076 1.732L52 110V0z"
-                                              fill="url(#browser-e)"/>
+                                              fill="url(#browser-e)" />
                                         <path d="M103.49 70.27L52 0v110l50.89-36.011a2.637 2.637 0 0 0 1.077-1.732 2.669 2.669 0 0 0-.476-1.987z"
-                                              fill="url(#browser-n)"/>
+                                              fill="url(#browser-n)" />
                                     </g>
                                 </g>
                             </svg>
@@ -292,22 +442,22 @@
                                     <radialGradient cx="56.15%" cy="27.43%" fx="56.15%" fy="27.43%" r="57.526%"
                                                     gradientTransform="matrix(.5626 -.82673 .8022 .54591 .026 .589)"
                                                     id="ball-3-a">
-                                        <stop stop-color="#fafcff" offset="0%"/>
-                                        <stop stop-color="#d9e7ff" offset="34.827%"/>
-                                        <stop stop-color="#8fbaff" offset="100%"/>
+                                        <stop stop-color="#fafcff" offset="0%" />
+                                        <stop stop-color="#d9e7ff" offset="34.827%" />
+                                        <stop stop-color="#8fbaff" offset="100%" />
                                     </radialGradient>
                                     <filter x="-500%" y="-500%" width="1000%" height="1000%"
                                             filterUnits="objectBoundingBox" id="dropshadow-ball-3">
-                                        <feOffset dx="24" dy="24" in="SourceAlpha" result="shadowOffsetOuter"/>
+                                        <feOffset dx="24" dy="24" in="SourceAlpha" result="shadowOffsetOuter" />
                                         <feGaussianBlur stdDeviation="24" in="shadowOffsetOuter"
-                                                        result="shadowBlurOuter"/>
+                                                        result="shadowBlurOuter" />
                                         <feColorMatrix values="0 0 0 0 0.10 0 0 0 0 0.17 0 0 0 0 0.21 0 0 0 0.22 0"
-                                                       in="shadowBlurOuter"/>
+                                                       in="shadowBlurOuter" />
                                     </filter>
                                 </defs>
                                 <circle cx="40" cy="40" r="40" fill="#FFF" fill-rule="evenodd"
-                                        style="filter:url(#dropshadow-ball-3)"/>
-                                <circle cx="40" cy="40" r="40" fill="url(#ball-3-a)" fill-rule="evenodd"/>
+                                        style="filter:url(#dropshadow-ball-3)" />
+                                <circle cx="40" cy="40" r="40" fill="url(#ball-3-a)" fill-rule="evenodd" />
                             </svg>
                         </div>
                         <div class="hero-ball hero-ball-4 is-revealing">
@@ -316,22 +466,22 @@
                                     <radialGradient cx="56.15%" cy="27.43%" fx="56.15%" fy="27.43%" r="57.526%"
                                                     gradientTransform="matrix(.5626 -.82673 .8022 .54591 .026 .589)"
                                                     id="ball-4-a">
-                                        <stop stop-color="#fafcff" offset="0%"/>
-                                        <stop stop-color="#d9e7ff" offset="34.827%"/>
-                                        <stop stop-color="#8fbaff" offset="100%"/>
+                                        <stop stop-color="#fafcff" offset="0%" />
+                                        <stop stop-color="#d9e7ff" offset="34.827%" />
+                                        <stop stop-color="#8fbaff" offset="100%" />
                                     </radialGradient>
                                     <filter x="-500%" y="-500%" width="1000%" height="1000%"
                                             filterUnits="objectBoundingBox" id="dropshadow-ball-4">
-                                        <feOffset dx="24" dy="24" in="SourceAlpha" result="shadowOffsetOuter"/>
+                                        <feOffset dx="24" dy="24" in="SourceAlpha" result="shadowOffsetOuter" />
                                         <feGaussianBlur stdDeviation="24" in="shadowOffsetOuter"
-                                                        result="shadowBlurOuter"/>
+                                                        result="shadowBlurOuter" />
                                         <feColorMatrix values="0 0 0 0 0.10 0 0 0 0 0.17 0 0 0 0 0.21 0 0 0 0.22 0"
-                                                       in="shadowBlurOuter"/>
+                                                       in="shadowBlurOuter" />
                                     </filter>
                                 </defs>
                                 <circle cx="20" cy="20" r="20" fill="#FFF" fill-rule="evenodd"
-                                        style="filter:url(#dropshadow-ball-4)"/>
-                                <circle cx="20" cy="20" r="20" fill="url(#ball-4-a)" fill-rule="evenodd"/>
+                                        style="filter:url(#dropshadow-ball-4)" />
+                                <circle cx="20" cy="20" r="20" fill="url(#ball-4-a)" fill-rule="evenodd" />
                             </svg>
                         </div>
                         <div class="hero-ball hero-ball-5 is-revealing">
@@ -340,22 +490,22 @@
                                     <radialGradient cx="56.15%" cy="27.43%" fx="56.15%" fy="27.43%" r="57.526%"
                                                     gradientTransform="matrix(.5626 -.82673 .8022 .54591 .026 .589)"
                                                     id="ball-5-a">
-                                        <stop stop-color="#fafcff" offset="0%"/>
-                                        <stop stop-color="#d9e7ff" offset="34.827%"/>
-                                        <stop stop-color="#8fbaff" offset="100%"/>
+                                        <stop stop-color="#fafcff" offset="0%" />
+                                        <stop stop-color="#d9e7ff" offset="34.827%" />
+                                        <stop stop-color="#8fbaff" offset="100%" />
                                     </radialGradient>
                                     <filter x="-500%" y="-500%" width="1000%" height="1000%"
                                             filterUnits="objectBoundingBox" id="dropshadow-ball-5">
-                                        <feOffset dx="24" dy="24" in="SourceAlpha" result="shadowOffsetOuter"/>
+                                        <feOffset dx="24" dy="24" in="SourceAlpha" result="shadowOffsetOuter" />
                                         <feGaussianBlur stdDeviation="24" in="shadowOffsetOuter"
-                                                        result="shadowBlurOuter"/>
+                                                        result="shadowBlurOuter" />
                                         <feColorMatrix values="0 0 0 0 0.10 0 0 0 0 0.17 0 0 0 0 0.21 0 0 0 0.22 0"
-                                                       in="shadowBlurOuter"/>
+                                                       in="shadowBlurOuter" />
                                     </filter>
                                 </defs>
                                 <circle cx="12" cy="12" r="12" fill="#FFF" fill-rule="evenodd"
-                                        style="filter:url(#dropshadow-ball-5)"/>
-                                <circle cx="12" cy="12" r="12" fill="url(#ball-5-a)" fill-rule="evenodd"/>
+                                        style="filter:url(#dropshadow-ball-5)" />
+                                <circle cx="12" cy="12" r="12" fill="url(#ball-5-a)" fill-rule="evenodd" />
                             </svg>
                         </div>
                     </div>
