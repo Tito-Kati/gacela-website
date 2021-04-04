@@ -27,10 +27,6 @@
     justify-content: center;
 }
 
-.footer-copyright {
-    color: color(typography, 3);
-}
-
 .footer-brand,
 .footer-links,
 .footer-social-links {
@@ -98,5 +94,11 @@
     .footer-links {
         order: 1;
         margin-bottom: 0;
+    }
+}
+
+@include media( '>large' ) {
+    .footer-copyright {
+        color: color(typography, 3);
     }
 }
