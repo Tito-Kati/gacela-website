@@ -11,6 +11,9 @@
     <script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
 </head>
 <body class="is-boxed has-animations">
+
+<button onclick="goToTop()" id="top-button" title="Go to top">Top</button>
+
 <div class="body-wrap boxed-container">
     <header class="site-header">
         <a href="https://github.com/gacela-project/gacela" class="github-corner" aria-label="View source on GitHub">
@@ -38,7 +41,7 @@
                             <h1 class="hero-title h2-mobile mt-0 is-revealing">Gacela Project</h1>
 
                             <h2 class="hero-paragraph is-revealing">
-                                Gacela is a PHP framework that helps you to improve the design of your application by
+                                Gacela is a PHP framework that helps you improve the design of your application by
                                 splitting the logic into different modules
                                 <a href="https://github.com/gacela-project/gacela">
                                     <span class="screen-reader-text">Github</span><i class="fab fa-github"></i>
@@ -55,19 +58,17 @@
                             <div class="hero-paragraph is-revealing">
                                 <ul>
                                     <li>Modules interact <b>ONLY</b> via their <i>Facade</i>.</li>
-                                    <li>The <b>Facade</b> has access to the <i>Factory</i>.</li>
-                                    <li>The <b>Factory</b> creates the module's objects.</li>
-                                    <li>The <b>Config</b> it's accessible from the Factory.</li>
-                                    <li>The <b>DependencyProvider</b> gets other <i>Facades</i>.</li>
+                                    <li>The <a class="anchor-text-ref" href="#facade">Facade</a> has access to the <i>Factory</i>.</li>
+                                    <li>The <a class="anchor-text-ref" href="#factory">Factory</a> creates the module's objects.</li>
+                                    <li>The <a class="anchor-text-ref" href="#config">Config</a> is accessible from the Factory.</li>
+                                    <li>The <a class="anchor-text-ref" href="#dependency-provider">DependencyProvider</a> gets other <i>Facades</i>.</li>
                                 </ul>
                             </div>
 
                             <div class="hero-paragraph is-revealing">
                                 <div>
-                                    <h4 id="facade">Facade <small>The entry point of your module</small>
-                                        <a class="anchor-link" href="#facade">¶</a>
-                                    </h4>
-
+                                    <h4 id="facade">Facade<a class="anchor-link" href="#facade">¶</a></h4>
+                                    <p><small>Entering your module</small></p>
                                     <p>
                                         The Facade uses the Factory to create the module's domain instances and executes
                                         the desired behaviour from them.
@@ -102,15 +103,12 @@ $result = $facade->sum(2, 3);
                                 </div>
 
                                 <div>
-                                    <h4 id="factory">Factory <small>It's where you create your objects</small>
-                                        <a class="anchor-link" href="#factory">¶</a>
-                                    </h4>
+                                    <h4 id="factory">Factory<a class="anchor-link" href="#factory">¶</a></h4>
+                                    <p><small>Creating your objects</small></p>
                                     <p>
                                         The Factory is the place where you create your domain services and objects.
-                                        The Factory is accessible only by the Facade.
+                                        It is accessible only by the Facade.
                                     </p>
-
-                                    <span>The Factory is the place where you create your domain services and objects. The Facade is the class that can access the Factory.</span>
 
                                     <pre><code data-language="php"># src/Calculator/Factory.php
 
@@ -145,14 +143,12 @@ final class Facade extends AbstractFacade implements FacadeInterface
                                 </div>
 
                                 <div>
-                                    <h4 id="config">Config <small>It reads the config.php key-values</small>
-                                        <a class="anchor-link" href="#config">¶</a>
-                                    </h4>
+                                    <h4 id="config">Config<a class="anchor-link" href="#config">¶</a></h4>
+                                    <p><small>Reading the config.php key-values</small></p>
                                     <p>
-                                        Use a Config Class to construct your business domain classes by injecting the
-                                        data
-                                        from the Config using the Factory when you do the creation of your domain
-                                        classes.
+                                        Use the Config class to get the values from the config.php files (under the
+                                        config directory), and to access them using the Factory when you create your
+                                        module classes.
                                     </p>
 
                                     <pre><code data-language="php"># config.php
@@ -191,13 +187,13 @@ final class Factory extends AbstractFactory
                                 </div>
 
                                 <div>
-                                    <h4 id="dependency-provider">DependencyProvider <small>It
-                                        defines the dependencies</small>
-                                        <a class="anchor-link" href="#dependency-provider">¶</a>
-                                    </h4>
+                                    <h4 id="dependency-provider">DependencyProvider<a class="anchor-link" href="#dependency-provider">¶</a></h4>
+                                    <p><small>Defining the dependencies</small></p>
                                     <p>
                                         This is the place where you can define the dependencies that a particular module
-                                        has with other modules.
+                                        has with other modules. This is helpful to define the different services from the
+                                        module's container. The container has access to the locator which is shared within
+                                        all modules, and it can reuse the same instances from all facades.
                                     </p>
 
                                     <pre><code data-language="php"># src/Calculator/Factory.php
