@@ -50,19 +50,23 @@
   }
 
   win.onscroll = () => {
-    const topButton = document.getElementById("top-button");
-    const minPixDownToShowTheButton = 500;
-    if (document.body.scrollTop > minPixDownToShowTheButton
-        || document.documentElement.scrollTop > minPixDownToShowTheButton
+    const topButton = document.getElementById('top-button')
+    const minPixDownToShowTheButton = 500
+    if (document.body.scrollTop > minPixDownToShowTheButton ||
+        document.documentElement.scrollTop > minPixDownToShowTheButton
     ) {
-      topButton.style.display = "block";
+      topButton.style.display = 'block'
     } else {
-      topButton.style.display = "none";
+      topButton.style.display = 'none'
     }
   }
 }())
 
-function goToTop() {
-  document.body.scrollTop = 0; // For Safari
-  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+// eslint-disable-next-line no-unused-vars
+function goToTop () {
+  window.scroll({
+    top: 0,
+    left: 0,
+    behavior: 'smooth'
+  })
 }

@@ -12,14 +12,16 @@
     z-index: 99;
     border: none;
     outline: none;
-    background-color: white;
-    color: black;
+    background-color: color(typography, 2i);
+    color: color(typography, 1);
     cursor: pointer;
-    padding: 12px;
-    border-radius: 10px;
+    padding: 4px 20px;
+    border-radius: 2px;
     font-size: 18px;
+    font-weight: 500;
 }
 
 #top-button:hover {
-    background-color: #555;
+    background-color: color(primary, 3);
+    color: color(typography, 1i);
 }
