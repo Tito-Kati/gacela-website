@@ -145,6 +145,7 @@ final class Facade extends AbstractFacade implements FacadeInterface
                                 <div>
                                     <h4 id="config">Config<a class="anchor-link" href="#config">¶</a></h4>
                                     <p><small>Reading the config.php key-values</small></p>
+
                                     <p>
                                         Use the Config class to get the values from the config.php files (under the
                                         config directory), and to access them using the Factory when you create your
@@ -184,6 +185,11 @@ final class Factory extends AbstractFactory
         );
     }
 }</code></pre>
+                                    <p>PS: Do not forget to define the <code>$applicationRootDir</code> in your
+                                        bootstrap application file.</p>
+
+                                    <pre><code data-language="php">\Gacela\Framework\Config::setApplicationRootDir(getcwd());</code></pre>
+
                                 </div>
 
                                 <div>
