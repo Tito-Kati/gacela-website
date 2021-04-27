@@ -39,16 +39,17 @@
                 <div class="hero-inner">
                     <div class="hero-copy">
                         <div class="container-sm">
-                            <img class="gacela-logo" src="images/gacela-logo.png" alt="gacela logo">
-                            <h1 class="hero-title h2-mobile mt-0 is-revealing">Gacela Project</h1>
+                            <div class="hero-gacela-logo">
+                                <a href="https://github.com/gacela-project/gacela">
+                                    <img class="gacela-logo" src="images/gacela-logo.png" alt="gacela logo">
+                                </a>
+                            </div>
+                            <h2 class="hero-title h2-mobile mt-0 is-revealing">Gacela Project</h2>
 
-                            <h2 class="hero-paragraph is-revealing">
+                            <h3 class="hero-paragraph is-revealing">
                                 Gacela is a PHP framework that helps you improve the design of your application by
                                 splitting the logic into different modules
-                                <a href="https://github.com/gacela-project/gacela">
-                                    <span class="screen-reader-text">Github</span><i class="fab fa-github"></i>
-                                </a>
-                            </h2>
+                            </h3>
 
                             <p class="hero-paragraph is-revealing">
                                 Splitting your project into different modules will help the design of your project in
@@ -187,11 +188,6 @@ final class Factory extends AbstractFactory
         );
     }
 }</code></pre>
-                                    <p>PS: Do not forget to define the <code>$applicationRootDir</code> in your
-                                        bootstrap application file.</p>
-
-                                    <pre><code data-language="php">\Gacela\Framework\Config::setApplicationRootDir(getcwd());</code></pre>
-
                                 </div>
 
                                 <div>
@@ -249,6 +245,10 @@ final class DependencyProvider extends AbstractDependencyProvider
 
                             </div>
                         </div>
+                        <a href="https://github.com/gacela-project/gacela">
+                            Check out the code in Github
+                            <span class="screen-reader-text">Github</span><i class="fa fa-github"></i>
+                        </a>
                     </div>
                     <div class="hero-illustration">
                         <div class="hero-squares hero-squares-1 is-revealing">
